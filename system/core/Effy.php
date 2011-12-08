@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
 * THE MASTER class, singleton
@@ -33,10 +33,25 @@ class Effy implements Singleton {
 		$configFile = APP_PATH . 'config.php';
 		if(is_file($configFile)) {
 			include($configFile);
-		} else {
-			die('The file ' . APP_PATH . 'config.php is missig!');
 		}
 
+		switch (ENVIRONMENT) {
+	case 'development':
+		ini_set('display_errors', 1);
+		ini_set('log_errors', 1);
+		error_reporting(E_ALL | E_NOTICE);
+		break;
+
+	case 'production':
+		ini_set('display_errors', 0);
+		ini_set('log_errors', 0);
+		error_reporting(0);
+		break;
+
+	default:
+			die('You have to set ENVIRONMENT variable');
+			break;
+}
 
 		// Start a named session
 		session_name($this->config['session']['name']);

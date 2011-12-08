@@ -9,7 +9,7 @@
  */
 
 define('ENVIRONMENT', 'development');
-//define('ENVIRONMENT', 'production');
+//define(ENVIRONMENT, 'production');
 
 /**
  *  Define path to a WRITABLE directory, for storage sqlite, uploaded files etc. 
