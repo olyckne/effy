@@ -1,5 +1,7 @@
 application/config.php
 data/
-applications/controllers/*
-applications/models/*
-applications/views/*
+application/controllers/**
+application/models/**
+application/views/**
+
+.DS_Store

@@ -8,14 +8,14 @@
  *	production = debbugging and error reporting is off
  */
 
-define(ENVIRONMENT, 'development');
+define('ENVIRONMENT', 'development');
 //define(ENVIRONMENT, 'production');
 
 /**
  *  Define path to a WRITABLE directory, for storage sqlite, uploaded files etc. 
  */
 
-define(DATA_PATH, BASE_PATH . "/data");
+define('DATA_PATH', BASE_PATH . "/data");
 
 
 /**
