@@ -1,13 +1,10 @@
 <?php
 
-/*if(!is_file(APP_PATH . 'config.php')) {
-	header('Location: setup.php');
-	exit;
-}
+/**
+ * 	Defines
+ */
 
-require_once(APP_PATH . 'config.php');
-
-*/
+ define('POWERED_BY', "Powered by &copy; <a href='https://github.com/olyckne/effy'>Effy</a>, a free and open source PHP based MVC inspired CMS framework.");
 
 /**
  *  Enables autoload of class declarations
@@ -24,13 +21,11 @@ function __autoload($className) {
 			APP_PATH . "models/{$className}.php",
 			APP_PATH . "views/{$className}.php"
 		);
-//	$file1 = SYS_PATH . "core/{$className}.php";
-//	$file2 = APP_PATH . "controllers/{$className}.php";
-//	$file3 = SYS_PATH . "controllers/{$className}.php";
-	
+
 	foreach($files as $file) {
 		if(is_file($file)) {
 			require_once($file);
+			break;
 		}
 	}
 }

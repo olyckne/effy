@@ -14,12 +14,12 @@ class Request
 	 */
 
 	public $supportCleanUrls;
-	
+	public $baseUrl;
+
 	public $current;
 	public $controller;
 	public $action;
 	public $args;
-	public $params;
 
 	 
 	public function __construct($cleanUrls = false)
@@ -57,18 +57,14 @@ class Request
 
 		$this->controller 	= !empty($splits[0]) ? $splits[0] : 'index';
 		$this->action 		= !empty($splits[1]) ? $splits[1] : 'index';
-		$this->args = $this->params = array();
+		$this->args = $splits;
+		unset($this->args[0]);
+		unset($this->args[1]);
+		// after unset first value will have index 2. This resets it to 0.
+		$this->args = array_values($this->args);
 
-		if(!empty($splits[2])) {
-			for($i = 2; $length = count($splits), $i < $length; $i+=2) {
-				$this->params[$splits[$i]] = !empty($splits[$i+1]) ? $splits[$i+1] : null;
-				$this->args[] = $splits[$i];
-				if(!empty($splits[$i+1])) $this->args[] = $splits[$i+1];
 
-			} 
-
-		}
-
+		$this->baseUrl = "{$parts['scheme']}://{$parts['host']}" . (isset($parts['port']) ? ":{$parts['port']}" : "") . "{$dir}" . "/";
 	}
 
 

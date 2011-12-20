@@ -14,23 +14,25 @@ class database
 
 	function __construct()
 	{
-		$ef = Effy::GetInstance();
+		global $ef;
 
-		print_r('<pre>');
-		print_r($ef->config);
-		print_r('</pre>');
-		$this->dsn = $ef->config['db']['dsn'];
-		$this->user = $ef->config['db']['username'];
-		$this->pass = $ef->config['db']['password'];
-		$this->driver_options = $ef->config['db']['driver_options'];
-		$this->db_prefix = $ef->config['db']['db_prefix'];
+		$this->dsn = $ef->cfg['db']['dsn'];
+		$this->user = $ef->cfg['db']['username'];
+		$this->pass = $ef->cfg['db']['password'];
+		$this->driver_options = $ef->cfg['db']['driver_options'];
+		$this->db_prefix = $ef->cfg['db']['db_prefix'];
 
+
+		$this->connect();
+	}
+
+	public function connect() {
 		try {
 			$pdo = new PDO($this->dsn, $this->user, $this->pass, $this->driver_options);
 		} catch(PDOException $e) {
 			echo "Connection failed " . $e->getMessage();
 		}
 	}
-
+	
 
 }

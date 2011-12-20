@@ -16,7 +16,6 @@ define('BASE_PATH', dirname(__FILE__));
 define('APP_PATH', BASE_PATH . "/application/");
 define('SYS_PATH', BASE_PATH . "/system/");
 
-
 /**
  * include bootstrap
  */
@@ -28,4 +27,7 @@ include(SYS_PATH . 'core/bootstrap.php');
 
 $ef = Effy::GetInstance();
 
-$ef->FrontController();
+$ef->frontController();
+
+
+$ef->templateEngine();

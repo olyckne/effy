@@ -45,12 +45,12 @@ $ef->config['db']['db_prefix'] = 'effy_';
  * 	The controller used as index
  */
 
- $ef->config['general']['standard_controller'] = 'welcome';
+ $ef->config['general']['default_controller'] = 'welcome';
  
 /**
  * 	session name
  */
-$ef->config['session']['name'] = 'effy_' . $_SERVER['SERVER_NAME'];
+$ef->config['session']['name'] = 'effy_' . preg_replace('/[:\.\/-_]/', '', $_SERVER["SERVER_NAME"]);
 
 /**
  *  Set internal character encoding to UTF-8
