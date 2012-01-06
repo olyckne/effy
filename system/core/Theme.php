@@ -14,14 +14,16 @@ class Theme implements Singleton
 	public $html;
 
 	public $name;
-	public $path;
-	public $urlPath;
-	
+	public $real_path;
+	public $url_path;
+	public $site_url;
+
 	public $grids = 24;
 	/**
 	 *  HTML Head stuff
 	 */
-
+	
+	public $siteTitle;
 	public $doctype;
 	public $charset;
 	public $pageLang = 'en';
@@ -29,14 +31,14 @@ class Theme implements Singleton
 	public $meta = array();
 	public $favicon;
 	public $styles = array();
-	public $script = array();
+	public $scripts = array();
 	
 
 	/**
 	 *  HTML Header stuff
 	 */
 
-	 public $menu;
+	 public $mainmenu = array();
 
 	/**
 	  * 	HTML Footer stuff
@@ -51,37 +53,32 @@ class Theme implements Singleton
 
 
 
-	protected function __construct($name = 'default')
+	protected function __construct()
 	{
 		global $ef;
 		
 		$this->html = new html();
-		$this->themeToUse = $name;
+		$this->themeToUse = $ef->cfg['config-db']['theme']['name'];
 		$this->getPaths();
 		
 		$this->styles = array(
-			'main' => $this->urlPath . '/style.css'
+			'main' => $this->url_path . '/style.css'
 			);
 
 		$ef->cfg['theme']['charset'] = 'utf-8';
-
-		$ef->cfg['theme']['meta'] = array(
-				'charset'		=> $ef->cfg['theme']['charset'],
-				'keyword'		=> 'framework, php',
-				'description'	=> 'blabla',
-				'author'		=> 'Mattias Lyckne, hello@mattiaslyckne.se',
-				'copyright'		=> 'Copyright 2011'
-			);
 		
 		foreach($ef->cfg['theme'] as $key => $value) {
 			$this->$key = $value;
 		}
 
-		$this->menu = array(
-				'Start'		=> '#',
-			);
+		$this->siteTitle = $ef->cfg['config-db']['general']['sitetitle'];
 
-		$this->views['menu'] = $this->menu;
+		$this->meta = array(
+				'keywords' => '',
+				'descrπiption' => '',
+				'author'	=> "{$ef->cfg['config-db']['general']['owner_name']}, {$ef->cfg['config-db']['general']['owner_mail']}",
+				'copyright' => "Copyright, 2011, {$ef->cfg['config-db']['general']['owner_name']}",
+			);
 	}
 
 	public static function GetInstance() {
@@ -95,15 +92,20 @@ class Theme implements Singleton
 
 
 	public function setTheme($name='') {
+		global $ef;
+
+		$ef->cfg['config-db']['theme']['name'] = $name;
 		$this->themeToUse = $name;
 
 		$this->getPaths();
+
+		$ef->saveConfig();
 	}
 
 
 	/**
 	 * getPaths
-	 * Finds the real and url path to the theme and puts in class variables
+	 * Finds the real and url real_path to the theme and puts in class variables
 	 *
 	 * @return void
 	 * @author 
@@ -114,8 +116,10 @@ class Theme implements Singleton
 
 		$load = new Loader();
 
-		$this->path = $load->theme($this->themeToUse);
-		$this->urlPath = $ef->req->baseUrl . 'themes/' . $this->themeToUse;
+		$this->real_path = $load->theme($this->themeToUse);
+		$this->url_path = $ef->req->baseUrl . 'themes/' . $this->themeToUse;
+		$this->site_url = $ef->cfg['config-db']['general']['siteurl'];
+		$this->styles['main'] = $this->url_path . '/style.css';
 	}
 
 
@@ -127,12 +131,33 @@ class Theme implements Singleton
 	 **/
 	
 	public function addStyle($name, $type='screen') {
-		$filePath = $this->path . $name;
+		$filePath = $this->real_path . $name;
 		if(is_file($filePath)) {
 			$this->styles[$type] = $filePath;
 		}
 	}
 
+	/**
+	 * addExternalStyle
+	 *
+	 * @return void
+	 * @author 
+	 **/
+	public function addExternalStyle($name, $type='screen') {
+		array_unshift($this->styles, $name);
+	}
+
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 * @author 
+	 **/
+	public function addScript($script, $region = 'footer') {
+		$scriptTag = "<script type='text/javascript' src='{$script}'></script>";
+
+		$this->addView($scriptTag, $region);
+	}
 	/**
 	 * render
 	 * Renders the page a.k.a includes the index.php file in the theme directory.
@@ -150,7 +175,7 @@ class Theme implements Singleton
 		}
 		
 		extract(get_object_vars($this));
-		include($this->path . 'index.php');
+		include($this->real_path . 'index.php');
 	}
 
 	/**
@@ -163,7 +188,7 @@ class Theme implements Singleton
 	 **/
 	
 	public function includeFuncFile() {
-		$funcFile = $this->path . '/functions.php';
+		$funcFile = $this->real_path . '/functions.php';
 
 		if(is_file($funcFile)) {
 			include($funcFile);
@@ -181,7 +206,7 @@ class Theme implements Singleton
 	public function getHeader($header = '') {
 		extract(get_object_vars($this));
 
-		include($this->path . 'header.php');
+		include($this->real_path . 'header.php');
 	}
 
 	/**
@@ -196,7 +221,7 @@ class Theme implements Singleton
 	public function getFooter($footer = '') {
 		extract(get_object_vars($this));
 
-		include($this->path . 'footer.php');
+		include($this->real_path . 'footer.php');
 	}
 
 	/**
@@ -256,7 +281,7 @@ class Theme implements Singleton
 	/**
 	 * viewExist
 	 * returns true or false for a view
-	 *
+	 *	
 	 * @return void
 	 * @author 
 	 **/
@@ -277,15 +302,21 @@ class Theme implements Singleton
 	  * @author 
 	  **/
 	 
-	 public function renderMenu() {
-	 	$html = "<nav id='ef-menu'><ul>";
-		foreach($this->views['menu'] as $text => $link) {
-	 		$html .= "<li class='ef-menu-item'><a href='{$link}'>{$text}</a></li>";
+	 public function renderMainMenu($menu = null) {
+
+	 	function modifyMainMenu($items) {
+		 	global $ef;
+	 		$ref = $ef->req->action;
+	 		$items[$ref]['class'] .= ' selected';
+	 		
+	 		return $items; 
 	 	}
 
-	 	$html .= "</ul></nav>";
-
-		echo $html;
+	 	$menu 	= isset($menu)			? $menu 		 : $this->mainmenu;
+	 	$list	= isset($menu['list']) 	? $menu['list']	 : false;
+	 	$id 	= isset($menu['id'])	? $menu['id'] . ' ef-mainmenu' 	 : 'ef-mainmenu';
+	 	$class 	= isset($menu['class'])	? $menu['class'] : null;
+	 	echo $this->generateMenu($menu, $list, $id, $class);
 	 }
 
 
@@ -310,5 +341,48 @@ class Theme implements Singleton
 	 			}
 	 		}
 	 	}
+	 }
+
+
+	 /**
+	  * generateMenu function
+	  * Generates a menu as html and returns it
+	  *	
+	  * @return void
+	  * @author 
+	  **/
+
+	 public function generateMenu($menu, $list=false, $id=null, $class=null) {
+	 	global $ef;
+	 	if(isset($menu['callback'])) {
+	 		$items = call_user_func($menu['callback'], $menu['items']);
+	 	} else $items = isset($menu['items']) ? $menu['items'] : null;
+
+	 	$list 	= isset($menu['list']) ? $menu['list'] : $list;
+	 	$id 	= isset($id)	? "id='{$id}' " 		: null;
+	 	$class 	= isset($class) ? "class='{$class}' " 	: null;
+
+
+
+	 	$html = "<nav {$id}{$class}>";
+	 	$noListClass = (!$list) ? "class='nolist' " : null;
+	 	$html .= "<ul {$noListClass}>";
+
+	 	if(isset($items)) {
+		 	foreach ($items as $item) {
+
+		 		$classes  = (!$list || (isset($item['class']))) ? "class='" : null;
+		 		$classes .= (!$list) ? "nolist " : null;
+		 		$classes .= isset($item['class']) ? "{$item['class']}" : null;
+		 		$classes .= "' ";
+		 		$html .= "<li {$classes}>";
+		 		$html .= "<a href='{$item['url']}'>{$item['title']}</a> ";
+		 		$html .= "</li>";
+		 	}
+		}
+	 	$html .="</ul>";
+
+	 	$html .= "</nav>";
+	 	return $html;
 	 }
 }

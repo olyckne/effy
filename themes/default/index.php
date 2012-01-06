@@ -9,6 +9,7 @@
 </aside> 
 <?php endif; ?>
 	<article id="ef-content" class="<?php echo $classContent;?>">
+		<?php echo $this->html->getFeedback(); ?>	
 		<?php $this->renderView('content'); ?>
 	</article>
 

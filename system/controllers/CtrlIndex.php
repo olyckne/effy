@@ -5,13 +5,33 @@
 */
 class CtrlIndex extends Controller
 {
-	
-	function __construct()
-	{
-		# code...
-	}
+
 
 	public function index() {
-		echo "CtrlIndex";
+
+		$mainMenu = array('callback' => 'modifyMainMenu', 'list' => true, 'id'=>null,'class'=>null,
+				'items' => array(
+					'index' => array(
+								'title' => 'home', 
+								'url' 	=> 'home',
+								'class' => 'ef-menu-item',
+								),
+					'about' => array(
+								'title' => 'about',
+								'url' 	=> 'about',
+								'class' => 'ef-menu-item',
+								),
+					'help'	=> array(
+								'title' => 'help',
+								'url'	=> 'http://mattiaslyckne.se',
+								'class' => 'ef-menu-item',
+								),
+
+					)
+				);
+
+		$this->theme->pageTitle = "EFFY!";
+		$this->theme->mainmenu = $mainMenu;
+
 	}
 }

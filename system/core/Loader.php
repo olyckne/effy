@@ -33,7 +33,7 @@ class Loader
 	 * 	Load model, it just calls the loadClass-method.
 	 */
 	public function model($name) {
-		$this->loadClass($this->modelPaths, $name);
+		return $this->loadClass($this->modelPaths, $name);
 	}
 
 	/**
@@ -51,8 +51,8 @@ class Loader
 	/**
 	 * 	Load helper, it just calls the loadClass-method
 	 */
-	public function helper($name) {
-		$this->loadClass($this->helperPaths, $name);
+	public function helper($name, $args = array()) {
+		return $this->loadClass($this->helperPaths, $name, $args);
 	}
 
 	/**
@@ -74,11 +74,11 @@ class Loader
 	/**
 	 * 		Searches for the class, and if it finds it, create an object of the class and returns it.
 	 */
-	public function loadClass($paths, $name) {
+	public function loadClass($paths, $name, $args=null) {
 		foreach($paths as $path) {
 			$file = $path . $name . '.php';
 			if(is_file($file)) {
-				$class = new $name();
+				$class = new $name($args);
 
 				return $class;
 				break;
@@ -104,17 +104,20 @@ class Loader
 		}
 
 		if($ctrlEnabled && $classExists) {
-
 			$rc = new ReflectionClass($className);
 
 			if($rc->isSubclassOf('Controller')) {
 				if($rc->hasMethod($action)) {
-					$ctrlObj = $rc->newInstance();
+					$ctrlObj = $rc->newInstance();					
 					$method = $rc->getMethod($action);
+
 					$method->invokeArgs($ctrlObj, $args);
 				}
 				else {
-					throw new Exception("Controller {$controller} does not have method {$action}");
+					//throw new Exception("Controller {$controller} does not have method {$action}");
+					$feedback = array('class' => 'error', 'message' => "Couldn't find matching page. Action {$action} is missing.");
+					$ef->addFeedback($feedback);
+					$ef->frontController($controller, 'code404');
 				}
 			}
 			else {
@@ -122,8 +125,7 @@ class Loader
 			}
 		}
 		else {
-			$feedback = array('class' => 'error', 'message' => "Couldn't find a matching page. Sorry!");
-			$ef->addFeedback($feedback);
+			$ef->addFeedbackError("Sorry! Couldn't find the page.");
 			$ef->frontController('error', 'code404');
 		}
 	}

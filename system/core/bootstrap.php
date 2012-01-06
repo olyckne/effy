@@ -15,11 +15,11 @@ function __autoload($className) {
 			SYS_PATH . "core/{$className}.php",
 			SYS_PATH . "controllers/{$className}.php",
 			SYS_PATH . "models/{$className}.php",
-			SYS_PATH . "views/{$className}.php",
 			SYS_PATH . "helpers/{$className}.php",
+			SYS_PATH . "core/interfaces/{$className}.php",
+			
 			APP_PATH . "controllers/{$className}.php",
 			APP_PATH . "models/{$className}.php",
-			APP_PATH . "views/{$className}.php"
 		);
 
 	foreach($files as $file) {
@@ -29,20 +29,3 @@ function __autoload($className) {
 		}
 	}
 }
-
-/**
- * 
- */
-
-interface Singleton {
-	public static function GetInstance();
-}
-
-/**
- * 
- */
-
-/* interface Controller {
- 	
- 	public function index();
- }*/

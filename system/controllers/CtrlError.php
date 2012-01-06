@@ -15,7 +15,6 @@ class CtrlError extends Controller
 	 * @author 
 	 **/
 	public function index($errorCode = '') {
-		echo "hej! {$errorCode}";
 	}
 
 
@@ -27,8 +26,7 @@ class CtrlError extends Controller
 	 * @author 
 	 **/
 	public function code404() {
+		global $ef;
 
-		$feedback = $this->theme->html->getFeedback();
-		$this->theme->addView($feedback);
 	}
 }

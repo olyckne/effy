@@ -61,11 +61,14 @@ EOD;
 		global $ef;
 		$html = "";
 
-		foreach ($_SESSION[$ef::feedbackSessionName] as $feedback) {
-			$html .= "<p><output class='{$feedback['class']}'>{$feedback['message']}</output></p>";
+
+		if(isset($_SESSION[$ef::feedbackSessionName])) {
+			foreach ($_SESSION[$ef::feedbackSessionName] as $feedback) {
+				$html .= "<p><output class='{$feedback['class']}'>{$feedback['message']}</output></p>";
+			}
+
+			unset($_SESSION[$ef::feedbackSessionName]);
 		}
-
-
 
 		return $html;
 	}

@@ -15,6 +15,7 @@ class Request
 
 	public $supportCleanUrls;
 	public $baseUrl;
+	public $standardController;
 
 	public $current;
 	public $controller;
@@ -22,14 +23,16 @@ class Request
 	public $args;
 
 	 
-	public function __construct($cleanUrls = false)
+	public function __construct($cleanUrls = false, $standardController = 'index')
 	{
 		$this->current = null;
 		$this->supportCleanUrls = $cleanUrls;
+		$this->standardController = $standardController;
 	}
 
 
 	public function init($modifiedBaseUrl = null) {
+
 		$url = $this->getUrlToCurrentPage();
 
 		$parts = parse_url($url);
@@ -45,7 +48,7 @@ class Request
 				$splits = explode('/', trim($_GET['p'], '/'));
 			}
 			else {
-				$splits[0] = 'welcome';
+				$splits[0] = $this->standardController;
 			}
 		}
 
@@ -63,7 +66,6 @@ class Request
 		// after unset first value will have index 2. This resets it to 0.
 		$this->args = array_values($this->args);
 
-
 		$this->baseUrl = "{$parts['scheme']}://{$parts['host']}" . (isset($parts['port']) ? ":{$parts['port']}" : "") . "{$dir}" . "/";
 	}
 
@@ -74,5 +76,21 @@ class Request
 
 			return $this->current;
 		}
+	}
+
+
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 * @author 
+	 **/
+	public function redirectTo($controller=null,$action=null,$params=null) {
+		global $ef;
+
+		$url = $ef->cfg['config-db']['general']['siteurl'] . "/{$controller}/{$action}/";
+
+		header('Location: ' . $url);
+
 	}
 }
