@@ -34,7 +34,7 @@ class Admin extends Controller implements active
 								),
 						'page'		=> array(
 								'title' => 'Pages',
-								'url'	=> $this->url . 'page',
+								'url'	=> $this->url . 'page/listAll',
 								'class' => 'ef-menu-item',
 							),
 						'canurls' 	=> array(

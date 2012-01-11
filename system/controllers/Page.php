@@ -196,16 +196,6 @@ EOD;
 		</table>
 		</form>
 EOD;
-
-		$html .= <<<EOD
-		<script type="text/javascript">
-			var options = {
-				title : function() { return "KEY"},
-				content : function() { return "Key for page"}
-			};
-			$("#key").popover(options);
-		</script>
-EOD;
 		$this->theme->addView($html);
 	}
 

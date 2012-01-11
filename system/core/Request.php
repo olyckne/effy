@@ -31,12 +31,13 @@ class Request
 	public $post;
 	public $session;
 
-	public function __construct($cleanUrls = false, $standardController = 'index')
+	public function __construct($baseUrl = '', $standardController = 'index')
 	{
+		$this->baseUrl = $baseUrl;
 		$this->current = null;
-		$this->supportCleanUrls = $cleanUrls;
 		$this->standardController = $standardController;
 		$this->splitControllerActionParams($this->standardController);
+
 
 	}
 
