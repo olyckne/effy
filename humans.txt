@@ -1,0 +1,11 @@
+/* TEAM */
+The one and only: Mattias Lyckne
+Contact: hello [at] mattiaslyckne.se
+Twitter: @olyckne
+From: Karlskrona, Sweden
+
+
+/* SITE */
+STANDARDS: HTML5, CSS3
+COMPONENTS: jQuery, Twitter bootstrap, elRTE WYSIWYG editor
+SOFTWARE: Sublime text 2, Transmit

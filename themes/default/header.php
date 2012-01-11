@@ -35,6 +35,8 @@
 	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 <![endif]-->
 
+<link rel="author" href="humans.txt" />
+
 <?php echo $this->renderView('head'); ?>
 </head>
 <body>
