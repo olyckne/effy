@@ -6,7 +6,7 @@
 
 // namespace system/core;
 
-class Effy implements Singleton, useSQL {
+class Effy implements singleton, useSQL {
 	
 	/**
  	*  Variables
@@ -41,39 +41,49 @@ class Effy implements Singleton, useSQL {
 	public $theme;
 
 	/**
-	 *   Holds the feedback session name
+	 *   Holds session stuff
 	 */
 
-	const feedbackSessionName = 'ef-feedback';
+	public $sessionName;
+	public $sessionId;
+
 	
+
 	protected function __construct()
 	{
-
 		// Reference this to ef just to use the same variable everywhere
 		$ef = &$this;
 
-		// set default exception handler
-		set_exception_handler(array($this, 'DefaultExceptionHandler'));
-
-		$this->load = new Loader();
-		
 		$configFile = APP_PATH . 'config.php';
 		if(is_file($configFile)) {
-			ob_start();//Hook output buffer 
+//			ob_start();//Hook output buffer 
 			include($configFile);
-			ob_end_clean();//Clear output buffer
+//			ob_end_clean();//Clear output buffer
 		}
 		else {
-			session_start();
-			$_SESSION['APP_PATH'] = APP_PATH;
+//			session_start();
+//			$_SESSION['APP_PATH'] = APP_PATH;
 			header('Location: setup.php' );
+			exit;
 		}
+
+		// Start a named session
+		session_name($ef->cfg['session']['name']);
+		session_start();
+		$this->sessionName = session_name();
+		$this->sessionId = session_id();
+
+
+		// set default exception handler
+		set_exception_handler(array($this, 'DefaultExceptionHandler'));
+		
+		$this->load = new Loader();
 
 		// Load config from database
 		extract($ef->cfg['db']);
 		$this->db = new Database($ef->cfg['db']);
 		
-		$cfg = $this->db->executeAndFetchAll($this->SQL('load ef::config'));
+		$cfg = $this->db->executeAndFetchAll($this->SQL('load ef::config', $ef->cfg['db']['db_prefix']));
 
 		$this->cfg['config-db'] = unserialize($cfg[0]['ef_value']);
 
@@ -82,24 +92,21 @@ class Effy implements Singleton, useSQL {
 
 		date_default_timezone_set($ef->cfg['config-db']['general']['timezone']);	
 
-		// Start a named session
-		session_name($this->cfg['session']['name']);
-		session_start();
 
 
-		$ef->cfg['controllers'] =  array(
-			'error' 	=> array('enabled' => true, 'class' => 'CtrlError'),
-			'admin' 	=> array('enabled' => true, 'class' => 'CtrlAdmin'),
-			'content'	=> array('enabled' => true, 'class' => 'CtrlContent'),
-			'user'		=> array('enabled' => true, 'class' => 'CtrlUser'),
-			);
-		
+/*		$ef->cfg['controllers'] =  array(
+			'index' => array('enabled' => true, 'class' => 'CtrlIndex'),
+			'error' => array('enabled' => true, 'class' => 'CtrlError'),
+			'admin' => array('enabled' => true, 'class' => 'CtrlAdmin'),
+			'page'  => array('enabled' => true, 'class' => 'CtrlContent'),
+			'user'  => array('enabled' => true, 'class' => 'CtrlUser'),
+			'canurl'=> array('enabled' => true, 'class' => 'CtrlCanonical'),
+			);*/
 
-		$indexController = isset($this->cfg['config-db']['index_controller']) ? $this->cfg['config-db']['index_controller'] : 'index';
+		$indexController = isset($this->cfg['config-db']['general']['standard_controller']) ? $this->cfg['config-db']['general']['standard_controller'] : 'index';
 		// Init the request
-		$this->req = new Request();
-		$this->req->init($this->cfg['config-db']['general']['siteurl'], $indexController);
-		$ef->cfg['general']['base_url'] = $this->req->baseUrl;
+		$this->req = new Request($this->cfg['config-db']['general']['siteurl'], $indexController);
+		$this->req->init();
 	}
 
 	public static function GetInstance() {
@@ -146,8 +153,10 @@ class Effy implements Singleton, useSQL {
 	 * @return void
 	 * @author 
 	 **/
-	public function SQL($id = null) {
-		$db_prefix = $this->cfg['db']['db_prefix'];
+	public static function SQL($id = null, $prefix = null) {
+		global $ef;
+
+		$db_prefix = isset($ef->cfg['db']['db_prefix']) ? $ef->cfg['db']['db_prefix'] : $prefix;
 
 		$query = array(
 				'create ef::config' => "CREATE TABLE IF NOT EXISTS {$db_prefix}Effy(ef_module VARCHAR(255),ef_key VARCHAR(255), ef_value TEXT, PRIMARY KEY(ef_module, ef_key))ENGINE=InnoDB;
@@ -178,11 +187,12 @@ class Effy implements Singleton, useSQL {
 
 
 	public function setEnvironment() {
+
 		switch (ENVIRONMENT) {
 			case 'development':
-				ini_set('display_errors', 1);
-				ini_set('log_errors', 1);
-				error_reporting(E_ALL | E_NOTICE);
+				error_reporting(-1);
+//				ini_set('display_errors', 1);
+//				ini_set('log_errors', 1);
 			break;
 
 			case 'production':
@@ -195,51 +205,31 @@ class Effy implements Singleton, useSQL {
 				die('You have to set ENVIRONMENT variable');
 			break;
 		}
+
 	}
 
 
 
-	/**
-	 *  	Feedback stuff
-	 */
 
 
 	 /**
-	  * addFeedback
-	  * add a feedback
+	  * Destroys and restarts the session
 	  *
 	  * @return void
 	  * @author 
 	  **/
-	 public function addFeedback($feedback) {
-	 	if(!isset($_SESSION[self::feedbackSessionName])) {
-	 		$_SESSION[self::feedbackSessionName] = array();
+	 public function destroyAndRestartsession() {
+	 	$_SESSION = array();
+	 	if(ini_get("session.use_cookies")) {
+	 		$params = session_get_cookie_params();
+	 		setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
 	 	}
 
-	 	$_SESSION[self::feedbackSessionName][] = $feedback;
+	 	session_destroy();
+	 	session_name($this->cfg['session']['name']);
+	 	session_start();
+	 	session_regenerate_id();
+	 	$this->sessionId = session_id();
 	 }
-
-	 /**
-	  * addFeedbackError function
-	  * Adds a feedback of type error
-	  *
-	  * @return void
-	  * @author 
-	  **/
-	 public function addFeedbackError($error) {
-	 	$this->addFeedback( array('class' => 'error', 'message' => $error));
-	 }
-
-	 /**
-	  * addFeedbackSuccess
-	  * Adds a feedback of type success
-	  *	
-	  * @return void
-	  * @author 
-	  **/
-	 public function addFeedbackSuccess($success) {
-	 	$this->addFeedback( array('class' => 'success', 'message' => $success));
-	 }
-
 
 }

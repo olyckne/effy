@@ -62,12 +62,12 @@ EOD;
 		$html = "";
 
 
-		if(isset($_SESSION[$ef::feedbackSessionName])) {
-			foreach ($_SESSION[$ef::feedbackSessionName] as $feedback) {
+		if(isset($_SESSION[Feedback::sessionName])) {
+			foreach ($_SESSION[Feedback::sessionName] as $feedback) {
 				$html .= "<p><output class='{$feedback['class']}'>{$feedback['message']}</output></p>";
 			}
 
-			unset($_SESSION[$ef::feedbackSessionName]);
+			unset($_SESSION[Feedback::sessionName]);
 		}
 
 		return $html;

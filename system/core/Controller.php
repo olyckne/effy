@@ -22,7 +22,7 @@ class Controller implements Singleton
 		$this->url = $ef->req->baseUrl . $ef->req->controller . '/';
 		$this->action = $ef->req->action;
 
-		$this->theme->siteTitle .= ' -' . $this->action;
+		$this->theme->siteTitle;
 
 	}
 
@@ -48,4 +48,5 @@ class Controller implements Singleton
 		$ef->frontController('error', 'code404');
 		
 	}
+
 }

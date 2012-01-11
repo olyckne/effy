@@ -11,13 +11,18 @@
  */
 
 function __autoload($className) {
+	$className = ucfirst($className);
+
 	$files = array(
 			SYS_PATH . "core/{$className}.php",
+			SYS_PATH . "controllers/Ctrl{$className}.php",
 			SYS_PATH . "controllers/{$className}.php",
 			SYS_PATH . "models/{$className}.php",
 			SYS_PATH . "helpers/{$className}.php",
 			SYS_PATH . "core/interfaces/{$className}.php",
+
 			
+			APP_PATH . "controllers/Ctrl{$className}.php",
 			APP_PATH . "controllers/{$className}.php",
 			APP_PATH . "models/{$className}.php",
 		);

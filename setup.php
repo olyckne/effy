@@ -163,8 +163,11 @@ EOD;
 		<label for='url'>Site url: </label>
 		<input type='text' name='url' id='url' value='{$guessedUrl}' required> <br>
 
-		<label for='owner'>Owner name: </label>
-		<input type='text' name='owner' id='owner'> <br>
+		<label for='owner_firstname'>Owner firstname: </label>
+		<input type='text' name='owner_firstname' id='owner_firstname'> <br>
+
+		<label for='owner_lastname'>Owner lastname: </label>
+		<input type='text' name='owner_lastname' id='owner_lastname'> <br>
 
 		<label for='mail'>Admin mail: </label>
 		<input type='email' name='mail' id='mail'> <br>
@@ -194,17 +197,21 @@ EOD;
 		if($stmt->execute()) {
 			$title = isset($_POST['title']) ? $_POST['title'] : null;
 			$_SESSION['url'] = isset($_POST['url']) ? $_POST['url'] : null;
-			$owner = isset($_POST['owner']) ? $_POST['owner'] : null;
+			$firstname = isset($_POST['owner_firstname']) ? $_POST['owner_firstname'] : null;
+			$lastname = isset($_POST['owner_lastname']) ? $_POST['owner_lastname'] : null;
 			$mail = isset($_POST['mail']) ? $_POST['mail'] : null;
+
 
 			$ef->cfg['config-db']['general']['sitetitle'] = $title;
 			$ef->cfg['config-db']['general']['siteurl'] = $_SESSION['url'];
-			$ef->cfg['config-db']['general']['owner_name'] = $owner;
+			$ef->cfg['config-db']['general']['owner_firstname'] = $firstname;
+			$ef->cfg['config-db']['general']['owner_lastname'] = $lastname;
 			$ef->cfg['config-db']['general']['owner_mail'] = $mail;
 			$ef->cfg['config-db']['general']['char_encoding'] = 'UTF-8';
 			$ef->cfg['config-db']['general']['timezone'] = "Europe/Stockholm";
 			$ef->cfg['config-db']['theme']['name'] = 'default';
-			
+			$ef->cfg['config-db']['general']['standard_controller'] = 'index';
+
 			$cfg = serialize($ef->cfg['config-db']);
 
 			$query = "INSERT INTO {$db_prefix}Effy(ef_module, ef_key, ef_value) VALUES('effy', 'config', ?)";
@@ -220,6 +227,7 @@ EOD;
 			'BASEURL' => $_SESSION['url']
 			);
 		createConfigFile('config.php', $replace);
+		installModels();
 	case 6:
 		$html .= "Setup done!";
 		$html .= "<a href='{$_SESSION['url']}'>Continue</a>";
@@ -262,4 +270,38 @@ function createConfigFile($fileName, $replace) {
 	$newConfig = preg_replace($patterns, '$replace["$1"]', $configFile);
 
 	file_put_contents($app_path .'config.php', $newConfig);
+
+	require_once($app_path . 'config.php');
 }
+
+
+/**
+ * installModels runs the installModel-function on all the core models.
+ *
+ * @return void
+ * @author 
+ **/
+function installModels() {
+		require_once('system/core/Model.php');
+		require_once('system/core/interfaces/useSQL.php');
+		require_once('system/core/interfaces/Singleton.php');
+		require_once('system/core/Database.php');
+
+		$models = array(
+				'Page_model' => array('class' => 'Page_model', 'path' => 'system/models/Page_model.php'),
+				'CanonicalUrl' => array('class' => 'CanonicalUrl', 'path' => 'system/core/CanonicalUrl.php'),
+				'User' => array('class' => 'User', 'path' => 'system/core/User.php'),
+			);
+
+		foreach($models as $model) {
+			require_once($model['path']);
+
+			if($model['class'] == 'User') {
+				$temp = $model['class']::GetInstance();
+			} else {
+				$temp = new $model['class']();
+			}
+
+			$temp->installModel();
+		}
+	}

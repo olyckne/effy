@@ -72,13 +72,74 @@ class Theme implements Singleton
 		}
 
 		$this->siteTitle = $ef->cfg['config-db']['general']['sitetitle'];
+		$this->pageTitle = $this->siteTitle;
+
+		$name = $ef->cfg['config-db']['general']['owner_firstname'] . ' ' . $ef->cfg['config-db']['general']['owner_lastname'];
 
 		$this->meta = array(
 				'keywords' => '',
-				'descrπiption' => '',
-				'author'	=> "{$ef->cfg['config-db']['general']['owner_name']}, {$ef->cfg['config-db']['general']['owner_mail']}",
-				'copyright' => "Copyright, 2011, {$ef->cfg['config-db']['general']['owner_name']}",
+				'description' => '',
+				'author'	=> "{$name}, {$ef->cfg['config-db']['general']['owner_mail']}",
+				'copyright' => "Copyright, 2011, {$name}",
 			);
+
+		$this->mainmenu = $ef->cfg['config-db']['theme']['mainmenu'];
+
+		$this->createLoginoutMenu();
+	}
+
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 * @author 
+	 **/
+	public function createLoginoutMenu() {
+		global $ef;
+		$text = "";
+
+		$url = $ef->req->baseUrl . 'user/';
+		$currentUrl = str_replace('/', '+',$ef->req->getControllerActionParams());
+
+		$menu = array('callback' => null, 'id' => 'ef-loginmenu',
+					  'separator' => '| ');
+
+		$loggedInAs = "";
+		if(Auth::isAuthenticated()) {
+			$user = User_model::GetInstance();
+			$name = $user->userData['username'];
+			$menu['items'] = array(
+					$name => array(
+							'title' => $name,
+							'url'	=> $ef->req->baseUrl . 'admin/user',
+							'class' => null
+						),
+					'Dashboard' => array(
+							'title' => 'Dashboard',
+							'url'	=> $ef->req->baseUrl . 'admin',
+						),
+					'Logout'	=> array(
+							'title'	=> 'Logout',
+							'url' 	=> $url . "logoutAndRedirectTo/{$currentUrl}",
+						),
+					);
+		}
+		else {
+			$menu['items'] = array(
+					'Login' => array(
+							'title' => 'Login',
+							'url'	=> $url . "login",
+						),
+					);
+		}
+
+		if(!isset($this->views['login']))
+			$this->views['login'] = array();
+		
+
+		$html = $this->generateMenu($menu);
+		array_unshift($this->views['login'], $html);
+
 	}
 
 	public static function GetInstance() {
@@ -154,7 +215,7 @@ class Theme implements Singleton
 	 * @author 
 	 **/
 	public function addScript($script, $region = 'footer') {
-		$scriptTag = "<script type='text/javascript' src='{$script}'></script>";
+		$scriptTag = "<script type='text/javascript' src='{$script}'></script>\n";
 
 		$this->addView($scriptTag, $region);
 	}
@@ -167,6 +228,7 @@ class Theme implements Singleton
 	 **/
 	
 	public function render($theme = null) {
+		global $ef;
 
 		$this->includeFuncFile();
 
@@ -307,6 +369,7 @@ class Theme implements Singleton
 	 	function modifyMainMenu($items) {
 		 	global $ef;
 	 		$ref = $ef->req->action;
+	 		if(isset($items[$ref]))
 	 		$items[$ref]['class'] .= ' selected';
 	 		
 	 		return $items; 
@@ -352,21 +415,29 @@ class Theme implements Singleton
 	  * @author 
 	  **/
 
-	 public function generateMenu($menu, $list=false, $id=null, $class=null) {
+	 public function generateMenu($menu, $list=null, $id=null, $class=null) {
 	 	global $ef;
 	 	if(isset($menu['callback'])) {
 	 		$items = call_user_func($menu['callback'], $menu['items']);
 	 	} else $items = isset($menu['items']) ? $menu['items'] : null;
 
-	 	$list 	= isset($menu['list']) ? $menu['list'] : $list;
-	 	$id 	= isset($id)	? "id='{$id}' " 		: null;
-	 	$class 	= isset($class) ? "class='{$class}' " 	: null;
 
-
-
+		if(!isset($list)) 
+			$list = isset($menu['list']) ? $menu['list'] : false;
+		
+		if(!isset($id))
+			$id = isset($menu['id']) ? "id='{$menu['id']}'" : null;
+		else
+			$id = "id='$id'";
+		if(!isset($class))
+			$class = isset($menu['class']) ? "class='{$menu['class']}'" : null;
+		else
+			$class = "class='$class'";
+			
 	 	$html = "<nav {$id}{$class}>";
 	 	$noListClass = (!$list) ? "class='nolist' " : null;
 	 	$html .= "<ul {$noListClass}>";
+	 	$separator = isset($menu['separator']) ? $menu['separator'] : null;
 
 	 	if(isset($items)) {
 		 	foreach ($items as $item) {
@@ -376,13 +447,58 @@ class Theme implements Singleton
 		 		$classes .= isset($item['class']) ? "{$item['class']}" : null;
 		 		$classes .= "' ";
 		 		$html .= "<li {$classes}>";
-		 		$html .= "<a href='{$item['url']}'>{$item['title']}</a> ";
+		 		$html .= "<a href='{$item['url']}'>{$item['title']}</a> $separator";
 		 		$html .= "</li>";
 		 	}
 		}
+		if(isset($separator)) {
+			$pos = strrpos($html, "$separator");
+			if($pos) {
+				$html = substr_replace($html, '', $pos);
+			}
+		}
+
 	 	$html .="</ul>";
 
 	 	$html .= "</nav>";
 	 	return $html;
+	 }
+
+
+
+	 /**
+	  * Adds a WYSIWYG-editor (Uses the elRTE-editor)
+	  *
+	  * @return void
+	  * @author 
+	  **/
+	 public function editor($element=".editor", $options=null) {
+		global $ef;
+
+
+		$options = isset($options) ? json_encode($options) : json_encode(array('lang' => 'en',
+													  'styleWithCSS' => false,
+													  'height' => 400,
+													  'toolbar' => 'maxi'));
+
+	 	$sitePath = $ef->cfg['config-db']['general']['siteurl'] . 'themes/core/libraries/';
+	 	$pathToEditor = $sitePath . 'elRTE/';
+
+	 	$this->addExternalStyle($pathToEditor . 'css/smoothnes/jquery-ui-1.8.13.custom.css');
+	 	$this->addExternalStyle($pathToEditor . 'css/elrte.min.css');
+
+	 	$this->addScript($pathToEditor . 'js/jquery-1.6.1.min.js', 'head');
+	 	$this->addScript($pathToEditor . 'js/jquery-ui-1.8.13.custom.min.js', 'head');
+	 	$this->addScript($pathToEditor . 'js/elrte.min.js', 'head');
+
+	 	$editorScript = <<<EOD
+	 	<script type="text/javascript">
+	 		$().ready( function() {
+	 			$('{$element}').elrte({$options});
+	 		});
+	 	</script>
+EOD;
+
+		$this->addView($editorScript, 'footer');
 	 }
 }

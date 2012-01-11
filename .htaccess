@@ -1,7 +1,8 @@
-# Medes (if the file, dir or link is not, then redirect to index.php)
+# Effy (if the file, dir or link is not, then redirect to index.php)
 RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
 
 RewriteRule (.*) index.php/$1 [NC,L]

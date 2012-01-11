@@ -92,10 +92,82 @@ class Loader
 	public function controller($controller, $action, $args) {
 		global $ef;
 
+		$controller = ucfirst($controller);
+		$ctrlActive = false;
+		$classExists = class_exists($controller);
+		$canUrl = new CanonicalUrl();
+
+		// Step 1 - Controller class must exist
+		if($classExists) {
+			$rc = new ReflectionClass($controller);
+
+			// Step 2 - The controller must inherit from superclass Controller
+			if($rc->isSubclassOf('Controller')) {
+
+				// Step 3 - The controller must implement the interface Active (otherwise we render as if the controller doesn't exist at all)
+				if(!$rc->implementsInterface('active')) {
+					Feedback::addError("Sorry! Couldn't find the page.");
+					$ef->frontController('error', 'code404');
+				} else {
+
+					// Step 4 - The controller must have the method.
+					if($rc->hasMethod($action)) {
+						$ctrlObj = $rc->newInstance();
+						$method = $rc->getMethod($action);
+
+						// If method starts with '_', we render it if it doesn't exists at all
+						if($method->name{0} == '_') {
+							Feedback::addError("Couldn't find matching page!");
+							$ef->frontController($controller, 'code404');
+						} else {
+
+							// Step 5 - Run the method, and we're done.
+							try {
+								$method->invokeArgs($ctrlObj, $args);
+							} catch(ReflectionException $e) {
+								Feedback::addError("Ooops! Something went wrong, try again!");
+								$ef->frontController('error');
+							}
+						}
+					}
+					// Found controller, but the method searched for didn't exist, forward to the controllers 404 
+					else {
+						Feedback::addError("Couldn't find matching page. Action {$action} is missing.");
+						$ef->frontController($controller, 'code404');
+					}
+				}
+			} 
+			// Controller didn't inherit from superclass Controller
+			else {
+				throw new Exception("Controller {$controller} does not inherit from the Controller superclass!");
+				
+			}
+		} 
+
+		// The controller class didn't exist, maybe it's a canonical url?
+		elseif($url = $canUrl->checkUrl(trim($ef->req->query, '/'))) {
+			$canfile = BASE_PATH . "/$url";
+			if(is_file($canfile)) {
+				include($canfile);
+			} else {
+				$ef->req->forwardTo($url);
+				$ef->frontController();
+			}
+		} 
+		// The page just doesn't seem to exist, send to error controllers 404-page.
+		else {
+			Feedback::addError("Sorry! Couldn't find the page.");
+			$ef->frontController('error', 'code404');
+		}
+
+
+/*				OBSOLETE?! */
+/* 
 		$ctrlExist		= isset($ef->cfg['controllers'][$controller]);
 		$ctrlEnabled	= false;
 		$className		= null;
 		$classExists	= false;
+		$canUrl			= new CanonicalUrl();
 
 		if($ctrlExist) {
 			$ctrlEnabled 	= $ef->cfg['controllers'][$controller]['enabled'];
@@ -115,8 +187,8 @@ class Loader
 				}
 				else {
 					//throw new Exception("Controller {$controller} does not have method {$action}");
-					$feedback = array('class' => 'error', 'message' => "Couldn't find matching page. Action {$action} is missing.");
-					$ef->addFeedback($feedback);
+					$feedback = "Couldn't find matching page. Action {$action} is missing.";
+					Feedback::addError($feedback);
 					$ef->frontController($controller, 'code404');
 				}
 			}
@@ -124,9 +196,21 @@ class Loader
 				throw new Exception("Controller {$controller} does not inherit from the Controller superclass");
 			}
 		}
+		elseif($url = $canUrl->checkUrl(trim($ef->req->query, '/'))) {
+			$canfile = BASE_PATH . "/$url";
+			if(is_file($canfile)) {
+				include($canfile);
+			}
+			else {
+				$ef->req->forwardTo($url);
+				$ef->frontController();
+			}
+		}
+
 		else {
-			$ef->addFeedbackError("Sorry! Couldn't find the page.");
+			Feedback::addError("Sorry! Couldn't find the page.");
 			$ef->frontController('error', 'code404');
 		}
+		*/
 	}
 }

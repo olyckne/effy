@@ -9,7 +9,7 @@
 
 // ------------------------------ Setup -------------------------------------------
 
-define('VERSION', '0.1');
+define('VERSION', '0.5');
 
 define('BASE_PATH', dirname(__FILE__));
 

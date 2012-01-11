@@ -8,6 +8,8 @@ class Database
 {
 	protected $db;
 	protected $stmt;
+	public $res;
+
 	public $db_prefix;
 	public $query;
 
@@ -59,9 +61,9 @@ class Database
 
 		$this->stmt->execute($params);
 
+		$this->res = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 
-		return $this->stmt->fetchAll();
-
+		return $this->res;	
 	}
 
 	/**
@@ -73,7 +75,7 @@ class Database
 	public function executeQuery($query, $params = null) {
 		$this->stmt = $this->db->prepare($query);
 
-		$this->stmt->execute($params);
+		return $this->stmt->execute($params);
 	}
 
 
@@ -86,6 +88,17 @@ class Database
 	public function saveCfg() {
 		global $ef;
 		$this->executeQuery($this->query['save ef::config'], array(serialize($ef->cfg['config-db'])));
+	}
+
+
+	/**
+	 * gets the last inserted ID
+	 *
+	 * @return void
+	 * @author 
+	 **/
+	public function lastInsertId() {
+		return $this->db->lastInsertId();
 	}
 
 }
