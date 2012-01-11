@@ -65,7 +65,7 @@ switch ($step) {
 		$data_path = 'data';
 		$ok = true;
 		if(!is_writable($app_path)) {
-			$html .= "Can't create config.php file, application directory not writable?<br> You need to chmod 777 it under the setup phase (you can and should set it back later!)";
+			$html .= "Couldn't create config.php file, application directory not writable?<br> You need to chmod 777 it under the setup phase (you can and should set it back later!) <br><br>";
 			$ok = false;
 		}
 		if(is_dir($data_path)) {
@@ -75,12 +75,21 @@ switch ($step) {
 			}
 			
 		}
-		elseif(!mkdir($data_path)) {
-			$html .= "Couldn't create the data directory. You should create it yourself! <br>";
-			$ok = false;
+		else {
+			@mkdir($data_path);
+			
+			$error = error_get_last();
+
+			if(isset($error)) {
+				$html .= "Couldn't create the data directory in the sites root folder. You should create it yourself! <br>";
+				$ok = false;
+			}
+			else
+				$ok = true;
 		}
 
 		if($ok) header("Location: setup.php?step={$nextStep}");
+		else echo $html;
 		exit;
 
 		break;
@@ -282,26 +291,32 @@ function createConfigFile($fileName, $replace) {
  * @author 
  **/
 function installModels() {
+		require_once('system/core/bootstrap.php');
 		require_once('system/core/Model.php');
 		require_once('system/core/interfaces/SQL.php');
 		require_once('system/core/interfaces/Singleton.php');
+		require_once('system/core/interfaces/Installable.php');
 		require_once('system/core/Database.php');
+		require_once('system/core/CanonicalUrl.php');
+
 
 		$models = array(
 				'Page_model' => array('class' => 'Page_model', 'path' => 'system/models/Page_model.php'),
 				'CanonicalUrl' => array('class' => 'CanonicalUrl', 'path' => 'system/core/CanonicalUrl.php'),
-				'User' => array('class' => 'User_model', 'path' => 'system/core/User_model.php'),
+				'User' => array('class' => 'User_model', 'path' => 'system/models/User_model.php'),
 			);
 
 		foreach($models as $model) {
 			require_once($model['path']);
 
 			if($model['class'] == 'User_model') {
-				$temp = $model['class']::GetInstance();
+				$rc = new ReflectionClass($model['class']);
+				$temp = $rc->getMethod('GetInstance');
+				$temp = $temp->invoke(null);
 			} else {
 				$temp = new $model['class']();
 			}
 
 			$temp->installModel();
 		}
-	}
+}

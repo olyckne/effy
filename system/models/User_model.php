@@ -149,7 +149,7 @@ class User_model implements Singleton, SQL, Installable  {
 			
 			$salt = "";
 			if($id == 'create model' || $id == 'add user') {
-				$salt = User::getRandomSalt();
+				$salt = self::getRandomSalt();
 			}
 
 			$query = array(

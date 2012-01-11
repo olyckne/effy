@@ -59,9 +59,9 @@ class Page_model extends Model implements SQL, Installable
 		$query = array(
 				'create model' => "CREATE TABLE IF NOT EXISTS {$tableName} (
 									id INT PRIMARY KEY AUTO_INCREMENT,
-									key VARCHAR(255) NOT NULL UNIQUE,
+									`key` VARCHAR(255) NOT NULL UNIQUE,
 									title TINYTEXT,
-									content LONGTEXT,
+									`content` LONGTEXT,
 									owner INT NOT NULL,
 									created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 									published TIMESTAMP,
