@@ -296,7 +296,7 @@ function installModels() {
 		foreach($models as $model) {
 			require_once($model['path']);
 
-			if($model['class'] == 'User') {
+			if($model['class'] == 'User_model') {
 				$temp = $model['class']::GetInstance();
 			} else {
 				$temp = new $model['class']();
