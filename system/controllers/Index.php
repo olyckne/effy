@@ -3,7 +3,7 @@
 /**
 * Basic index controller
 */
-class Index extends Controller implements active
+class Index extends Controller implements Active
 {
 
 

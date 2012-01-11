@@ -6,7 +6,7 @@
  * @package default
  * @author 
  **/
-interface installable {
+interface Installable {
 		/**
 	 * called when installing a model.
 	 * Nothing happens in the base class but override it in the sub-class, for creating database table etc.

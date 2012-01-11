@@ -283,7 +283,7 @@ function createConfigFile($fileName, $replace) {
  **/
 function installModels() {
 		require_once('system/core/Model.php');
-		require_once('system/core/interfaces/useSQL.php');
+		require_once('system/core/interfaces/SQL.php');
 		require_once('system/core/interfaces/Singleton.php');
 		require_once('system/core/Database.php');
 

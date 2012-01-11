@@ -4,7 +4,7 @@
 /**
 * 
 */
-class CanonicalUrl extends Model implements useSQL
+class CanonicalUrl extends Model implements SQL, Installable
 {
 	
 	public $can_url = array();

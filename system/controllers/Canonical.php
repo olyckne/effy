@@ -3,7 +3,7 @@
 /**
 * Controller for handling canonical URLs
 */
-class Canonical extends Controller implements active
+class Canonical extends Controller implements Active
 {
 	protected $canonical_model;
 

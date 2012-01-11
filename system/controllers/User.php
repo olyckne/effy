@@ -4,7 +4,7 @@
 /**
 * 
 */
-class User extends Controller implements active
+class User extends Controller implements Active
 {
 	/**
 	 * undocumented class variable

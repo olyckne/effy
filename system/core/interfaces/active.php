@@ -7,6 +7,6 @@
  * @package default
  * @author 
  **/
-interface active {
+interface Active {
 
 } // END interface active

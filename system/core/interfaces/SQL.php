@@ -6,7 +6,7 @@
  * @package default
  * @author 
  **/
-interface useSQL {
+interface SQL {
 
 
 	/**

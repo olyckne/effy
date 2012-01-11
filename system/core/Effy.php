@@ -6,7 +6,7 @@
 
 // namespace system/core;
 
-class Effy implements singleton, useSQL {
+class Effy implements Singleton, SQL {
 	
 	/**
  	*  Variables

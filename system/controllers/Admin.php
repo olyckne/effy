@@ -4,7 +4,7 @@
 /**
 *  Admin Control Panel
 */
-class Admin extends Controller implements active
+class Admin extends Controller implements Active
 {
 
 	public $adminMenu;

@@ -4,7 +4,7 @@
 /**
 * 
 */
-class Error extends Controller implements active
+class Error extends Controller implements Active
 {
 	
 

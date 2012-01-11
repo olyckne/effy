@@ -3,7 +3,7 @@
 /**
 *  
 */
-class Page_model extends Model implements useSQL
+class Page_model extends Model implements SQL, Installable
 {
 	
 	public $page = array(

@@ -7,6 +7,6 @@
 
 // namespace system/core/interfaces;
 
-interface singleton {
+interface Singleton {
 	public static function GetInstance();
 }

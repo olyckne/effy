@@ -3,7 +3,7 @@
 /**
 * 
 */
-abstract class Model implements installable
+abstract class Model
 {
 	
 	public $db;

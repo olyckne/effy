@@ -5,7 +5,7 @@
 /**
 *  Controller for making some posts
 */
-class Page extends Controller implements active
+class Page extends Controller implements Active
 {
 	protected $page_model;
 

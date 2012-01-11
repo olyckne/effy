@@ -4,7 +4,7 @@
 /**
 *  User handle
 */
-class User_model implements singleton, useSQL, installable  {
+class User_model implements Singleton, SQL, Installable  {
 	
 
 		const sessionName = 'ef-user';
