@@ -1,6 +1,7 @@
 <div id="ef-footer-wrap">
 	<footer id="ef-footer" class="container">
 
+	<?php $this->renderView('footer'); ?>
 
 		<div class="ef-footer-column">
 			<?php $this->renderView('footer-column1'); ?>
@@ -16,7 +17,8 @@
 		</div>
 
 		<div id="ef-footer-bottom">
-			<?php echo POWERED_BY . "<br>";?>
+			<?php $this->renderView('footer-bottom');?>
+			<?php echo POWERED_BY; ?>
 		</div>
 	</footer>
 </div>
