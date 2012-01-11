@@ -290,7 +290,7 @@ function installModels() {
 		$models = array(
 				'Page_model' => array('class' => 'Page_model', 'path' => 'system/models/Page_model.php'),
 				'CanonicalUrl' => array('class' => 'CanonicalUrl', 'path' => 'system/core/CanonicalUrl.php'),
-				'User' => array('class' => 'User', 'path' => 'system/core/User.php'),
+				'User' => array('class' => 'User_model', 'path' => 'system/core/User_model.php'),
 			);
 
 		foreach($models as $model) {
