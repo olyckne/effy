@@ -10,7 +10,7 @@
  *  Enables autoload of class declarations
  */
 
-function __autoload($className) {
+function autoload($className) {
 	$className = ucfirst($className);
 
 	$files = array(
@@ -34,3 +34,5 @@ function __autoload($className) {
 		}
 	}
 }
+
+spl_autoload_register('autoload');
