@@ -3,7 +3,7 @@
 /**
 * Basic index controller
 */
-class CtrlIndex extends Controller
+class Index extends Controller implements active
 {
 
 
@@ -31,7 +31,7 @@ class CtrlIndex extends Controller
 				);
 
 		$this->theme->pageTitle = "EFFY!";
-		$this->theme->mainmenu = $mainMenu;
+	//	$this->theme->mainmenu = $mainMenu;
 
 	}
 }

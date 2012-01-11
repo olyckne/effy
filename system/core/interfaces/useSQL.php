@@ -15,6 +15,6 @@ interface useSQL {
 	 * @return void
 	 * @author 
 	 **/
-	public function SQL($id = null);
+	public static function SQL($id = null);
 
 } // END interface useSQL

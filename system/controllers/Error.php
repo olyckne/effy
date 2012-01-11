@@ -4,7 +4,7 @@
 /**
 * 
 */
-class CtrlError extends Controller
+class Error extends Controller implements active
 {
 	
 
