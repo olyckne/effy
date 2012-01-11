@@ -41,7 +41,8 @@ class User_model implements Singleton, SQL, Installable  {
 		 * @author 
 		 **/
 		public function installModel() {
-			$this->db->executeQuery($this->SQL('create model'));
+			$this->db->executeQuery(self::SQL('create model role'));
+			$this->db->executeQuery(self::SQL('create model user'));
 		}
 
 		public function updateModel() {;}
@@ -153,33 +154,37 @@ class User_model implements Singleton, SQL, Installable  {
 			}
 
 			$query = array(
-				'create model' 	=> "CREATE TABLE IF NOT EXISTS {$tableName}_role (
-										id CHAR(5) PRIMARY KEY,
+				'create model role' 	=> "CREATE TABLE IF NOT EXISTS {$tableName}_role (
+										`id` INT PRIMARY KEY AUTO_INCREMENT,
+										`role` CHAR(5) NOT NULL UNIQUE,
 										name CHAR(40) NOT NULL
 									)ENGINE=InnoDB;
 
-									CREATE TABLE IF NOT EXISTS {$tableName} (
-									id INT PRIMARY KEY AUTO_INCREMENT,
-									username VARCHAR(255) NOT NULL,
-									firstname VARCHAR(255) NOT NULL,
-									lastname VARCHAR(255) NOT NULL,
-									mail VARCHAR(255) NOT NULL,
-									role CHAR(5) NOT NULL DEFAULT 'user',
-									password VARCHAR(255) NOT NULL,
-									salt VARCHAR(255) NOT NULL,
+									INSERT INTO {$tableName}_role(`id`, `role`, `name`) VALUES
+																			(1, 'admin', 'Administrator of the site'),
+																			(2, 'user', 'User of the site.')",
+				
 
-									FOREIGN KEY(role) REFERENCES {$tableName}_role(id)
+				'create model user'		=> "CREATE TABLE IF NOT EXISTS {$tableName} (
+									`id` INT PRIMARY KEY AUTO_INCREMENT,
+									`username` VARCHAR(50) NOT NULL,
+									`firstname` VARCHAR(50) NOT NULL,
+									`lastname` VARCHAR(100) NOT NULL,
+									`mail` VARCHAR(100) NOT NULL,
+									`role` INT NOT NULL DEFAULT 2,
+									`password` VARCHAR(100) NOT NULL,
+									`salt` VARCHAR(25) NOT NULL,
+
+									CONSTRAINT user_role FOREIGN KEY(`role`) REFERENCES {$tableName}_role(`id`)
 									)ENGINE=InnoDB;
-
-									INSERT INTO {$tableName}_role(id, name) VALUES('admin', 'Administrator of the site'),
-																			('user', 'User of the site.');
 
 									INSERT INTO {$tableName}(username,firstname,lastname,mail,role,password,salt)
 													VALUES('admin', '{$ef->cfg['config-db']['general']['owner_firstname']}',
 																	 '{$ef->cfg['config-db']['general']['owner_lastname']}',
 																	 '{$ef->cfg['config-db']['general']['owner_mail']}',
-																	 'admin', md5('{$salt}admin'), '{$salt}'
+																	 1, md5('{$salt}admin'), '{$salt}'
 																	 );
+
 
 				",
 				'add user'		=> "INSERT INTO {$tableName}(username,firstname,lastname,mail,role,password)VALUES(?,?,?,?,?,?)",

@@ -83,7 +83,7 @@ class Theme implements Singleton
 				'copyright' => "Copyright, 2011, {$name}",
 			);
 
-		$this->mainmenu = $ef->cfg['config-db']['theme']['mainmenu'];
+		$this->mainmenu = isset($ef->cfg['config-db']['theme']['mainmenu']) ? $ef->cfg['config-db']['theme']['mainmenu'] : null;
 
 		$this->createLoginoutMenu();
 	}
