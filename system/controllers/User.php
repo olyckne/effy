@@ -29,9 +29,6 @@ class User extends Controller implements Active
 	public function index() {
 		global $ef;
 		$this->settings();
-		if(!$this->user_model->isAuthenticated()) {
-			$ef->req->redirectTo('user', 'login');
-		}
 
 	}
 
@@ -44,6 +41,8 @@ class User extends Controller implements Active
 	 * @author 
 	 **/
 	public function settings() {
+		Auth::LoginAndRedirect('user');
+
 		$html = "<h3>User settings</h3>";
 
 		extract($this->user_model->userData);

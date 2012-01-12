@@ -146,6 +146,7 @@ class Loader
 
 		// The controller class didn't exist, maybe it's a canonical url?
 		elseif($url = $canUrl->checkUrl(trim($ef->req->query, '/'))) {
+			$ef->req->can_url = trim($ef->req->query, '/');
 			$canfile = BASE_PATH . "/$url";
 			if(is_file($canfile)) {
 				include($canfile);

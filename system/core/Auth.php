@@ -22,7 +22,7 @@ class Auth
 
 		$user = User_model::GetInstance();
 
-		return $user->isAuthenticated() ? true : false;
+		return $user->isAuthenticated();
 	}
 
 

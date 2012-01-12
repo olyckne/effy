@@ -120,7 +120,6 @@ class CanonicalUrl extends Model implements SQL, Installable
 										can_url VARCHAR(255) UNIQUE NOT NULL,
 										real_url VARCHAR(255) NOT NULL,
 
-										FOREIGN KEY(real_url) REFERENCES {$db_prefix}pages(`key`)
 									)ENGINE=InnoDB;
 									",
 				'get all'		=> "SELECT * FROM {$tableName};",

@@ -25,7 +25,7 @@ class Request
 	public $controller;
 	public $action;
 	public $args;
-	
+	public $can_url = null;
 
 	public $get;
 	public $post;
@@ -151,7 +151,7 @@ class Request
 		$url = $ef->cfg['config-db']['general']['siteurl'] . "{$controller}{$action}{$params}";
 
 		header('Location: ' . $url);
-		exit;
+		exit();
 	}
 
 	/**

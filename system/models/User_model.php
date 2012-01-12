@@ -28,7 +28,7 @@ class User_model implements Singleton, SQL, Installable  {
 		
 
 		protected function __construct($userData=array()) {
-			$this->userData = $userData;
+			if(!empty($userData)) $this->userData = $userData;
 			$this->db = new Database();
 		}
 
@@ -55,7 +55,7 @@ class User_model implements Singleton, SQL, Installable  {
 				$obj = __CLASS__;
 				if(isset($_SESSION[self::sessionName])) {
 					self::$instance = new $obj($_SESSION[self::sessionName]);
-				} else {			
+				} else {
 					self::$instance = new $obj();
 				}
 			}
@@ -108,6 +108,16 @@ class User_model implements Singleton, SQL, Installable  {
 			$ef->destroyAndRestartSession();
 		}
 		
+
+		/**
+		 * undocumented function
+		 *
+		 * @return void
+		 * @author 
+		 **/
+		public function getUserId() {
+			return $this->userData['id'];
+		}
 		/**
 		 * undocumented function
 		 *
@@ -133,7 +143,7 @@ class User_model implements Singleton, SQL, Installable  {
 		 * @author 
 		 **/
 		public function isAuthenticated() {
-			return empty($this->userData) ? false : true;
+			return empty($this->userData['username']) ? false : true;
 		}
 
 		/**
@@ -175,7 +185,7 @@ class User_model implements Singleton, SQL, Installable  {
 									`password` VARCHAR(100) NOT NULL,
 									`salt` VARCHAR(25) NOT NULL,
 
-									CONSTRAINT {$tableName}user_role FOREIGN KEY(`role`) REFERENCES {$tableName}_role(`id`)
+									CONSTRAINT user_role FOREIGN KEY(`role`) REFERENCES {$tableName}_role(`id`)
 									)ENGINE=InnoDB;
 
 									INSERT INTO {$tableName}(username,firstname,lastname,mail,role,password,salt)

@@ -55,14 +55,15 @@ class Effy implements Singleton, SQL {
 		$ef = &$this;
 
 		$configFile = APP_PATH . 'config.php';
+
 		if(is_file($configFile)) {
 //			ob_start();//Hook output buffer 
 			include($configFile);
 //			ob_end_clean();//Clear output buffer
 		}
 		else {
-//			session_start();
-//			$_SESSION['APP_PATH'] = APP_PATH;
+			session_start();
+			$_SESSION['APP_PATH'] = APP_PATH;
 			header('Location: setup.php' );
 			exit;
 		}
@@ -166,7 +167,7 @@ class Effy implements Singleton, SQL {
 			);
 
 		if(!isset($query[$id])) {
-	  		throw new Exception(t('#class error: Out of range. Query = @id', array('#class'=>get_class(), '@id'=>$id)));
+	  		throw new Exception(get_clasS() . " error: Out of range. Query = {$id}");
 
 		}
 		return $query[$id];
@@ -181,7 +182,7 @@ class Effy implements Singleton, SQL {
 	 * @author 
 	 **/
 	public function saveConfig() {
-		echo $this->db->executeQuery($this->SQL('save ef::config'), array(serialize($this->cfg['config-db'])));
+		$this->db->executeQuery(self::SQL('save ef::config'), array(serialize($this->cfg['config-db'])));
 	}
 
 

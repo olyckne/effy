@@ -14,6 +14,10 @@ function autoload($className) {
 	$className = ucfirst($className);
 
 	$files = array(
+			APP_PATH . "controllers/Ctrl{$className}.php",
+			APP_PATH . "controllers/{$className}.php",
+			APP_PATH . "models/{$className}.php",
+
 			SYS_PATH . "core/{$className}.php",
 			SYS_PATH . "controllers/Ctrl{$className}.php",
 			SYS_PATH . "controllers/{$className}.php",
@@ -22,9 +26,6 @@ function autoload($className) {
 			SYS_PATH . "core/interfaces/{$className}.php",
 
 			
-			APP_PATH . "controllers/Ctrl{$className}.php",
-			APP_PATH . "controllers/{$className}.php",
-			APP_PATH . "models/{$className}.php",
 		);
 
 	foreach($files as $file) {

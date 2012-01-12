@@ -413,7 +413,7 @@ EOD;
 					</td> 
 					<td>
 					<input type='text' name='menuitemUrl{$nr}' value='{$item['url']}'>
-					<span class='description'><a href='{$this->url}removeMenu/{$item['title']}'' class='btn danger'>Remove</a><span>
+					<span class='description'><a href='{$this->url}removeMenu/{$item['url']}'' class='btn danger'>Remove</a><span>
 					</td>
 					</tr>";
 			$nr++;
@@ -461,7 +461,7 @@ EOD;
 				$item = array('title' => $_POST['menuitemTitle'.$i],
 								'url' => $_POST['menuitemUrl'.$i]);
 
-				$mainMenu['items'][$item['title']] = array(
+				$mainMenu['items'][$item['url']] = array(
 						'title' => $item['title'],
 						'url' 	=> $item['url'],
 						'class' => 'ef-menu-item',
@@ -470,11 +470,10 @@ EOD;
 		}
 		$ef->cfg['config-db']['theme']['mainmenu'] = $mainMenu;
 
-
+		
 		$ef->saveConfig();
 
 		$ef->req->redirectTo('admin', 'editMenu');
-
 	}
 
 

@@ -13,46 +13,11 @@ class Page extends Controller implements Active
 	{
 		parent::__construct();
 
-		$this->page_model = $this->load->model('page_model');
+		$this->page_model = $this->load->model('Page_model');
 
-		$this->theme->editor("textarea#content");
+		$this->theme->editor();
 
 		global $ef;
-/*
-		$pathToElrte = $ef->cfg['config-db']['general']['siteurl'] . 'system/libraries/elRTE/';
-		*/
-
-		$pathToBoostrapJs = $ef->cfg['config-db']['general']['siteurl'] . 'themes/core/libraries/bootstrap/js/';
-/*
-		$this->theme->addExternalStyle($pathToElrte . 'css/smoothness/jquery-ui-1.8.13.custom.css');
-		$this->theme->addExternalStyle($pathToElrte . 'css/elrte.min.css');
-	
-		$this->theme->addScript($pathToElrte . 'js/jquery-1.6.1.min.js', 'head');
-		$this->theme->addScript($pathToElrte . 'js/jquery-ui-1.8.13.custom.min.js');
-		$this->theme->addScript($pathToElrte . 'js/elrte.min.js');
-*/
-		$this->theme->addScript($pathToBoostrapJs . 'bootstrap-twipsy.js', 'head');
-		$this->theme->addScript($pathToBoostrapJs . 'bootstrap-popover.js', 'head');
-/*		
-		$elrtreScript = <<<EOD
-		<script type='text/javascript' charset='utf-8'>
-			$().ready( function() {
-				var opts = {
-					lang:			'en',
-					styleWithCSS:	false,
-					height:			400,
-					toolbar:		'maxi'
-				};
-
-				// create editor
-				$('textarea#content').elrte(opts);
-
-
-			});
-		</script>
-EOD;
-
-		$this->theme->addView($elrtreScript, 'footer');*/
 	}
 
 
@@ -145,6 +110,8 @@ EOD;
 		$page = $this->page_model->getByKey($key);
 
 		$this->theme->siteTitle .= " - " . $page['title'];
+
+		$this->theme->addView("<h1>{$page['title']}</h1>");
 		$this->theme->addView($page['content']);
 	}
 
@@ -184,7 +151,7 @@ EOD;
 			<tr>
 				<td></td>
 				<td>
-				<textarea name="content" id="content">{$content}</textarea>
+				<textarea name="content" id="content" cols=300 rows=20>{$content}</textarea>
 				</td>
 			</tr>
 

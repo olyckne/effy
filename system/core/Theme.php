@@ -368,10 +368,17 @@ class Theme implements Singleton
 
 	 	function modifyMainMenu($items) {
 		 	global $ef;
-	 		$ref = $ef->req->action;
+	 		$ref = $ef->req->controller;
+	 		$ref2 = $ef->req->action;
+	 		$ref3 = $ef->req->can_url;
+
 	 		if(isset($items[$ref]))
-	 		$items[$ref]['class'] .= ' selected';
-	 		
+	 			$items[$ref]['class'] .= ' selected';
+			elseif(isset($items[$ref2]))
+				$items[$ref2]['class'] .= ' selected';
+			elseif(isset($items[$ref3]))
+				$items[$ref3]['class'] .= ' selected';
+
 	 		return $items; 
 	 	}
 
@@ -482,7 +489,7 @@ class Theme implements Singleton
 													  'toolbar' => 'maxi'));
 
 	 	$sitePath = $ef->cfg['config-db']['general']['siteurl'] . 'themes/core/libraries/';
-	 	$pathToEditor = $sitePath . 'elRTE/';
+	 	$pathToEditor = $sitePath . 'elrte/';
 
 	 	$this->addExternalStyle($pathToEditor . 'css/smoothnes/jquery-ui-1.8.13.custom.css');
 	 	$this->addExternalStyle($pathToEditor . 'css/elrte.min.css');

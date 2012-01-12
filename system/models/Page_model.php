@@ -125,16 +125,17 @@ class Page_model extends Model implements SQL, Installable
 	 **/
 	public function load($sql, $whereValue) {
 		global $ef;
-		$this->page =  $this->db->executeAndFetchAll($this->SQL($sql),array($whereValue));
+		$page =  $this->db->executeAndFetchAll($this->SQL($sql),array($whereValue));
 
-		if(isset($this->page[0])) {
-			$this->page = $this->page[0];
+		if(isset($page[0])) {
+			$this->page = $page[0];
 
 			$this->page['can_url'] = $this->db->executeAndFetchAll(CanonicalUrl::SQL('get can_url from real_url'), array('page/view/'.$this->page['key']));
 
 			$this->page['can_url'] = isset($this->page['can_url'][0]) ? $this->page['can_url'][0]['can_url'] : 'page/view/'.$this->page['key'];
 			$this->page['url'] = $ef->cfg['config-db']['general']['siteurl'] . $this->page['can_url'];
 		}
+
 		return $this->page;		
 	}
 	/**
@@ -146,15 +147,14 @@ class Page_model extends Model implements SQL, Installable
 	public function save() {
 		global $ef;
 
-
-
-		$this->page['owner'] = 1;
+		$user = User_model::GetInstance();
+		$this->page['owner'] = $user->getUserId();
 		if(isset($this->page['id'])) {
 			$this->db->executeQuery($this->SQL('update page'), array($this->page['title'],$this->page['content'],$this->page['key'],$this->page['id']))	;
 		}
 		else {
 			$this->db->executeQuery($this->SQL('add page'), array($this->page['title'], $this->page['content'], $this->page['key'], $this->page['owner']));
-			$this->db->executeQuery($this->SQL('publish page'), $this->db->lastInsertId());
+			$this->db->executeQuery($this->SQL('publish page'), array($this->db->lastInsertId()));
 
 		}
 	}
