@@ -116,10 +116,9 @@ class CanonicalUrl extends Model implements SQL, Installable
 		$tableName = $db_prefix . 'can_url';
 		$query = array(
 				'create model' => "CREATE TABLE IF NOT EXISTS {$tableName} (
-										id INT PRIMARY KEY AUTO_INCREMENT,
+										`id` INT PRIMARY KEY AUTO_INCREMENT,
 										can_url VARCHAR(255) UNIQUE NOT NULL,
-										real_url VARCHAR(255) NOT NULL,
-
+										real_url VARCHAR(255) NOT NULL
 									)ENGINE=InnoDB;
 									",
 				'get all'		=> "SELECT * FROM {$tableName};",
