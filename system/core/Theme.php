@@ -57,7 +57,7 @@ class Theme implements Singleton
 	{
 		global $ef;
 		
-		$this->html = new html();
+		$this->html = new Html();
 		$this->themeToUse = $ef->cfg['config-db']['theme']['name'];
 		$this->getPaths();
 		

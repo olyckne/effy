@@ -175,7 +175,7 @@ class User_model implements Singleton, SQL, Installable  {
 									`password` VARCHAR(100) NOT NULL,
 									`salt` VARCHAR(25) NOT NULL,
 
-									CONSTRAINT user_role FOREIGN KEY(`role`) REFERENCES {$tableName}_role(`id`)
+									CONSTRAINT {$tableName}user_role FOREIGN KEY(`role`) REFERENCES {$tableName}_role(`id`)
 									)ENGINE=InnoDB;
 
 									INSERT INTO {$tableName}(username,firstname,lastname,mail,role,password,salt)
