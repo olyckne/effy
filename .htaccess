@@ -1,5 +1,10 @@
 # Effy (if the file, dir or link is not, then redirect to index.php)
+Options -MultiViews
+
 RewriteEngine on
+
+# Change this
+RewriteBase /effy
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
