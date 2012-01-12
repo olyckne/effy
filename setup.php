@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $app_path = isset($_SESSION['APP_PATH']) ? $_SESSION['APP_PATH'] : 'application/';
 
 $configFile = $app_path . 'config-sample.php';
