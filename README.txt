@@ -1,4 +1,0 @@
-#
-#
-# Effy README.txt
-#
