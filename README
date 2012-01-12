@@ -8,7 +8,7 @@
 1. Download
 2. Upload to your server
 3. Run the site, there is a (pretty bad for now) setup.php that will run.
-It will guide you home, I hope.
+It will guide you home, I hope. The database works sometimes, and sometimes not, for some reason.
 4. go to you url/admin and login in with user "admin" password "admin".
 
 
