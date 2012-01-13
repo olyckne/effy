@@ -28,7 +28,7 @@
 
 	<!-- Theme specific style -->
 <?php foreach($styles as $key => $value): ?>
-	<link rel="stylesheet" href="<?php echo $value;?>" type="<?php echo $key;?>">
+	<link rel="stylesheet" href="<?php echo $value;?>" type="text/css" media="<?php echo $key;?>">
 <?php endforeach; ?>
 
 <!--[if lt IE 9]>

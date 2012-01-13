@@ -62,7 +62,7 @@ class Theme implements Singleton
 		$this->getPaths();
 		
 		$this->styles = array(
-			'main' => $this->url_path . '/style.css'
+			'screen' => $this->url_path . '/style.css'
 			);
 
 		$ef->cfg['theme']['charset'] = 'utf-8';
@@ -205,7 +205,8 @@ class Theme implements Singleton
 	 * @author 
 	 **/
 	public function addExternalStyle($name, $type='screen') {
-		array_unshift($this->styles, $name);
+		$temp = array($type => $name);
+		array_unshift($this->styles, $temp);
 	}
 
 	/**
