@@ -14,4 +14,5 @@ If it doesn't work you need to create the tables etc yourself, look in the setup
 Yeah, it sucks. Gonna fix asap!
 5. go to you url/admin and login in with user "admin" password "admin".
 
-
+Optional:
+6. You could create a Controller.php with a class Controller extends BaseController. If you do all other controllers will extend your Controller. You see the power, right?
